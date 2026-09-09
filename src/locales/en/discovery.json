@@ -1,0 +1,20 @@
+{
+  "userBubble": {
+    "author": "You",
+    "time": "10:42 AM",
+    "text": "Find me a good lecture about the history of artificial intelligence. I know modern LLMs, but I want more context about the people, old ideas, and major turning points."
+  },
+  "aiBubble": {
+    "author": "Co-Watcher",
+    "role": "AI Assistant",
+    "time": "Just now",
+    "text": "I explored university archives and seminal lectures to find 4 talks that emphasize early cybernetics, the Dartmouth workshop, symbolic AI controversies, and the connection to modern architectures. Here are 4 distinct angles:",
+    "refineTitle": "Refine angle or adjust duration:"
+  },
+  "input": {
+    "placeholder": "Ask to refine the list, switch topic, or provide your background...",
+    "sendTitle": "Send refinement",
+    "footerStatus": "Filtering across university repositories & verified channels",
+    "resultsCount": "4 results available"
+  }
+}

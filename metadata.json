@@ -1,0 +1,6 @@
+{
+  "name": "Co-Watcher",
+  "description": "Autonomous AI Co-Viewer & Fact Synthesis for video watching, researching, fact-checking, and reaction video montage creation.",
+  "requestFramePermissions": ["camera", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

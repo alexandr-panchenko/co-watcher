@@ -1,0 +1,39 @@
+{
+  "hero": {
+    "badge": "Autonomous AI Co-Viewer & Fact Synthesis",
+    "title": "Watch with someone who can look anything up.",
+    "description": "Co-Watcher watches videos with you, researches what is being discussed, adds useful context and fact-checks, and can help turn your reactions and discovered context into finished video content."
+  },
+  "features": {
+    "context": {
+      "title": "Watch with context",
+      "description": "Paste a YouTube video and get timestamped AI comments with useful background, people, events, concepts, and connections the video itself does not explain."
+    },
+    "factCheck": {
+      "title": "Fact-check while watching",
+      "description": "Ask Co-Watcher to verify concrete claims and show supporting or contradicting evidence beside the relevant moment in the video."
+    },
+    "personal": {
+      "title": "Make it personal",
+      "description": "Tell Co-Watcher what you already know, why you are watching, and what interests you. It changes what it chooses to comment on."
+    },
+    "discovery": {
+      "title": "Find something worth watching",
+      "description": "Describe a topic, question, or learning goal and let Co-Watcher find relevant videos for you."
+    },
+    "reactions": {
+      "title": "Turn reactions into videos",
+      "description": "React to moments you find interesting, record your own voice or camera response, reuse researched facts and images, and let Co-Watcher assemble or revise a reaction video or short."
+    }
+  },
+  "suggestions": {
+    "label": "TRY ASKING"
+  },
+  "chat": {
+    "placeholder": "Ask Co-Watcher anything, paste a YouTube link, or describe what you want to watch...",
+    "attachTitle": "Paste Video URL or Attach Document",
+    "voiceTitle": "Voice Input",
+    "sendTitle": "Send prompt",
+    "footerHint": "Shift + Enter for new line • Press Enter to initiate"
+  }
+}

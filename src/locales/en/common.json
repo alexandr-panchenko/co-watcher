@@ -1,0 +1,38 @@
+{
+  "brand": {
+    "name": "Co-Watcher",
+    "tagline": "Autonomous AI Co-Viewer & Fact Synthesis"
+  },
+  "nav": {
+    "home": "Home",
+    "discovery": "AI Discovery",
+    "session": "Watch & Co-Pilot",
+    "assembly": "Reaction Cut v1",
+    "ready": "READY",
+    "selectVideoFirst": "Select or paste a video first",
+    "helpTitle": "Help & Capabilities",
+    "profileTitle": "User Profile (JD)",
+    "userInitials": "JD"
+  },
+  "actions": {
+    "done": "Done",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "copyLink": "Copy Share Link",
+    "copied": "Copied link!",
+    "renderExport": "Render & Export",
+    "rendering": "Rendering Cut...",
+    "gotIt": "Got it",
+    "reRecord": "Re-record",
+    "watchWithCoPilot": "Watch with Co-Pilot",
+    "useInReactionCut": "Use in Reaction Cut",
+    "recordReaction": "Record Reaction",
+    "send": "Send",
+    "verify": "Verify",
+    "verifyCitation": "Verify Citation",
+    "clearFilter": "Clear filter ({{filter}})",
+    "backToVideo": "Back to Video",
+    "exportVideo": "Export Video"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "header": {
+    "title": "Reaction Cut v1 • Vaswani & Shazeer Breakthrough",
+    "status": "Assembled"
+  },
+  "modes": {
+    "label": "Composition Mode:",
+    "pip": "PiP Inset",
+    "split": "Split 50/50",
+    "diagram": "Diagram Focus"
+  },
+  "preview": {
+    "camRec": "CAM REC",
+    "sourceLabel": "Source: 14:05",
+    "reactionLabel": "Reaction (00:24)",
+    "caption": "“...and that’s why dividing into multiple projection spaces was the non-obvious breakthrough in 2017!”",
+    "duckingOn": "Ducking: ON (-15dB)",
+    "duckingOff": "Ducking: OFF",
+    "subtitles": "Subtitles",
+    "duckingTitle": "Toggle automatic background audio ducking",
+    "playTitle": "Play Preview",
+    "pauseTitle": "Pause",
+    "restartTitle": "Restart from beginning"
+  },
+  "timeline": {
+    "title": "Assembled Sequence Storyboard",
+    "meta": "3 Segments • 01:18 Total",
+    "syncHint": "Auto-synchronized with video audio ducking"
+  },
+  "assistant": {
+    "title": "AI Cut Revision Assistant",
+    "agentActive": "Agent Active",
+    "quickEdits": "Quick One-Click Edits",
+    "trim3s": "Trim 3s off intro",
+    "muteSource": "Mute source during reaction",
+    "fullscreenSchematic": "Full-width schematic mode",
+    "placeholder": "E.g. 'Shorten reaction silence by 1s', 'Add diagram zoom at 00:24'...",
+    "voiceTitle": "Voice command",
+    "executeTitle": "Execute revision",
+    "footerHint": "Co-Watcher recompiles transitions and aligns audio waveforms",
+    "footerEnter": "Press Enter to apply"
+  }
+}
