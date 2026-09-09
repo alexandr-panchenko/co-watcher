@@ -6,7 +6,6 @@ export * from './Input';
 export * from './TextArea';
 export * from './Slider';
 export * from './SegmentedControl';
-export * from './Tabs';
 export * from './Modal';
 export * from './AspectBadge';
 export * from './Icon';

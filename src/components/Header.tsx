@@ -1,44 +1,18 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScreenType } from '../types';
-import { IconButton, Button, Tabs, TabItem } from './ui';
+import { IconButton, Button } from './ui';
 
 interface HeaderProps {
-  currentScreen: ScreenType;
   onNavigate: (screen: ScreenType) => void;
   onOpenHelp: () => void;
-  hasVideoSelected?: boolean;
-  hasReactionRecorded?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
-  currentScreen,
   onNavigate,
   onOpenHelp,
-  hasVideoSelected = false,
-  hasReactionRecorded = true,
 }) => {
   const { t } = useTranslation('common');
-
-  const navTabs: TabItem<ScreenType>[] = [
-    { id: 'home', label: t('nav.home') },
-    { id: 'discovery', label: t('nav.discovery') },
-    {
-      id: 'session',
-      label: t('nav.session'),
-      icon: 'play_arrow',
-      disabled: !hasVideoSelected,
-      title: !hasVideoSelected ? t('nav.selectVideoFirst') : undefined,
-    },
-    {
-      id: 'assembly',
-      label: t('nav.assembly'),
-      icon: 'movie_edit',
-      badge: hasReactionRecorded && hasVideoSelected ? t('nav.ready') : undefined,
-      disabled: !hasVideoSelected,
-      title: !hasVideoSelected ? t('nav.selectVideoFirst') : undefined,
-    },
-  ];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-surface-base/90 backdrop-blur-xl border-b border-white/5 shadow-header-bar">
@@ -58,16 +32,6 @@ export const Header: React.FC<HeaderProps> = ({
               {t('brand.name')}
             </span>
           </Button>
-
-          {/* Quick Screen Navigation Pills */}
-          <div className="hidden md:block">
-            <Tabs<ScreenType>
-              tabs={navTabs}
-              activeTab={currentScreen}
-              onChange={(tabId) => onNavigate(tabId)}
-              variant="pill"
-            />
-          </div>
         </div>
 
         {/* Right side controls: Help & Avatar */}

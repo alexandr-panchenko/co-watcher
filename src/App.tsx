@@ -36,11 +36,8 @@ export default function App() {
     <div className="min-h-screen bg-surface-base text-text-primary flex flex-col font-sans antialiased">
       {/* Persistent Global Header */}
       <Header
-        currentScreen={currentScreen}
         onNavigate={handleNavigate}
         onOpenHelp={() => setHelpOpen(true)}
-        hasVideoSelected={Boolean(selectedLecture)}
-        hasReactionRecorded={hasReaction}
       />
 
       {/* Main Content View with top offset for sticky header */}
