@@ -226,7 +226,27 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose }) => 
               variant="ghost"
               size="sm"
               className="text-secondary hover:text-white font-mono text-xs underline cursor-pointer"
-              onClick={() => alert(exportResult.filename)}
+              onClick={() => {
+                const edlData = {
+                  project: 'Co-Watcher Sequence Export',
+                  aspectRatio,
+                  resolution,
+                  timestamp: new Date().toISOString(),
+                  boundaryNote: exportResult.boundaryNote,
+                  status: exportResult.rendered ? 'rendered' : 'edl_package_ready',
+                };
+                const blob = new Blob([JSON.stringify(edlData, null, 2)], {
+                  type: 'application/json',
+                });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = exportResult.filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+              }}
             >
               {exportResult.rendered ? t('export.downloadMp4') : t('export.downloadEdl')}
             </Button>
