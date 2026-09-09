@@ -1,3 +1,10 @@
+# Co-Watcher
+
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Cloud%20Run-success)](https://co-watcher-778099662213.europe-west1.run.app)
+
+**Live Deployment:** [https://co-watcher-778099662213.europe-west1.run.app](https://co-watcher-778099662213.europe-west1.run.app)
+
 # Inspiration
 
 Occasionally you find great explanations or important context in a video's comment section. What if the entire comment section consisted only of timestamped comments created personally for the viewer?
