@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
+import { serveStatic } from 'hono/bun';
 import { serve } from '@hono/node-server';
 import dotenv from 'dotenv';
 import { roomStore } from './roomStore';
@@ -257,6 +258,10 @@ app.get('/api/room/:id/stream', (c) => {
     }
   );
 });
+
+// 7. Production static frontend serving
+app.use('/*', serveStatic({ root: './dist' }));
+app.get('/*', serveStatic({ path: './dist/index.html' }));
 
 const port = Number(process.env.PORT) || 8080;
 

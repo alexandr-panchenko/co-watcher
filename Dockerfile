@@ -1,47 +1,34 @@
-# ====================================================================
-# Stage 1: Build Frontend SPA & Pre-bundle Assets (Bun builder)
-# ====================================================================
+# Use official lightweight Bun image
 FROM oven/bun:1.2-slim AS builder
+
 WORKDIR /app
 
-# Copy dependency manifests
-COPY package.json bun.lock ./
+# Copy dependency specifications
+COPY package.json bun.lock* ./
 
-# Install dependencies with frozen lockfile
+# Install all dependencies including devDependencies for build
 RUN bun install --frozen-lockfile
 
-# Copy application sources
+# Copy source code and config files
 COPY . .
 
-# Build production Vite bundle into /app/dist
+# Build client production bundle (Vite)
 RUN bun run build
 
-# ====================================================================
-# Stage 2: Production Runtime with FFmpeg & Node.js 22 on Debian Slim
-# ====================================================================
-FROM node:22-bookworm-slim AS runner
-WORKDIR /app
+# Production runner stage
+FROM oven/bun:1.2-slim AS runner
 
-# Install system FFmpeg binary and ca-certificates
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends ffmpeg ca-certificates && \
-    rm -rf /var/lib/apt/lists/*
+WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=8080
 
-# Copy manifests and built client distribution from builder
+# Copy node_modules and built assets
 COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/bun.lock ./bun.lock
-COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/src ./src
 
-# Cloud Run default port
 EXPOSE 8080
 
-# Run as non-root node user for container security
-USER node
-
-# Start Hono server via tsx
-CMD ["npx", "tsx", "src/server/index.ts"]
+CMD ["bun", "src/server/index.ts"]
