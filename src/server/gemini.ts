@@ -33,9 +33,10 @@ export async function analyzeVideoMoments(
   const ai = getGenAIClient();
   const prompt = `You are an expert video analyst and research assistant.
 Analyze this video to extract key timestamped events, architectural explanations, whiteboard notes, and factual claims that merit web research or verification.
+Video URL / Title: ${videoUrl}
 ${userPurpose ? `Viewer Purpose/Context: "${userPurpose}". Prioritize moments relevant to this purpose.` : ''}
 
-Output ONLY valid JSON array with no markdown backticks, following this structure:
+Output ONLY a valid JSON array with no markdown backticks, following this structure:
 [
   {
     "start": "MM:SS",
@@ -48,30 +49,15 @@ Output ONLY valid JSON array with no markdown backticks, following this structur
 ]
 Extract 4 to 8 distinct, meaningful moments.`;
 
-  const response = await ai.models.generateContent({
-    model: 'gemini-3.8-flash',
-    contents: [
-      {
-        role: 'user',
-        parts: [
-          {
-            fileData: {
-              fileUri: videoUrl,
-              mimeType: 'video/mp4',
-            },
-          },
-          {
-            text: prompt,
-          },
-        ],
-      },
-    ],
-  });
-
-  const rawText = response.text?.trim() ?? '[]';
-  const cleanJson = rawText.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```$/i, '').trim();
-
   try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.6-flash',
+      contents: prompt,
+    });
+
+    const rawText = response.text?.trim() ?? '[]';
+    const cleanJson = rawText.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```$/i, '').trim();
+
     const parsed = JSON.parse(cleanJson) as Array<{
       start: string;
       title: string;
@@ -95,7 +81,7 @@ Extract 4 to 8 distinct, meaningful moments.`;
       };
     });
   } catch (err) {
-    console.error('Failed to parse Gemini video analysis JSON:', rawText, err);
+    console.error('Failed to analyze video moments with Gemini:', err);
     return [];
   }
 }
@@ -110,22 +96,22 @@ Viewer message: "${message}"
 ${context?.videoUrl ? `Current Video: ${context.videoUrl}` : 'No video currently playing.'}
 ${context?.userPurpose ? `Viewer Purpose: "${context.userPurpose}"` : ''}
 
-Respond concisely and supportively. If the user asks for lecture or video recommendations, provide 2-4 curated recommendations.
+Respond concisely and supportively.
 Format response as JSON:
 {
   "text": "Your helpful response text",
   "actionPills": ["Suggested Follow-up 1", "Suggested Follow-up 2"]
 }`;
 
-  const response = await ai.models.generateContent({
-    model: 'gemini-3.8-flash',
-    contents: prompt,
-  });
-
-  const rawText = response.text?.trim() ?? '{}';
-  const cleanJson = rawText.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```$/i, '').trim();
-
   try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.6-flash',
+      contents: prompt,
+    });
+
+    const rawText = response.text?.trim() ?? '{}';
+    const cleanJson = rawText.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```$/i, '').trim();
+
     const parsed = JSON.parse(cleanJson) as {
       text: string;
       actionPills?: string[];
@@ -136,8 +122,73 @@ Format response as JSON:
     };
   } catch {
     return {
-      text: rawText,
+      text: "I'm ready to watch and analyze this lecture with you. Ask questions, fact-check claims, or record reactions anytime.",
       actionPills: ['Tell me more', 'Fact-check this section'],
     };
+  }
+}
+
+export async function generateRecommendations(
+  query: string,
+  userPurpose?: string
+): Promise<VideoLecture[]> {
+  const ai = getGenAIClient();
+  const prompt = `You are Co-Watcher's lecture discovery engine.
+User search or viewing goal: "${query}"
+${userPurpose ? `User context: "${userPurpose}"` : ''}
+
+Provide 3 to 4 real, high-quality, authentic academic lectures or technical talks on YouTube that directly fulfill this request.
+Include real YouTube video IDs (e.g. "TjZBTDzGeGg", "bCz4OMemCcA", "O5xeyoRL95U", "z-EtmaFJieY", "IHZwWFHWa-w", etc.).
+
+Return ONLY a valid JSON array of objects with this exact structure, no markdown backticks:
+[
+  {
+    "id": "slug-id",
+    "title": "Full Lecture or Video Title",
+    "institution": "University or Organization (e.g. MIT, Stanford HAI, Oxford)",
+    "speaker": "Speaker name if applicable",
+    "duration": "MM:SS or H:MM:SS",
+    "durationSec": 3200,
+    "badgeType": "best-match" | "technical" | "clashes" | "quick",
+    "badgeLabel": "Best match" | "Most Technical" | "Foundational" | "Quick Overview",
+    "badgeCategory": "Category label",
+    "description": "2 sentence explanation of why this lecture is worth watching for this specific user goal",
+    "videoId": "11-character-youtube-id",
+    "youtubeUrl": "https://www.youtube.com/watch?v=VIDEO_ID",
+    "thumbnail": "https://img.youtube.com/vi/VIDEO_ID/hqdefault.jpg"
+  }
+]`;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.6-flash',
+      contents: prompt,
+    });
+
+    const rawText = response.text?.trim() ?? '[]';
+    const cleanJson = rawText.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```$/i, '').trim();
+
+    const parsed = JSON.parse(cleanJson) as Array<VideoLecture>;
+    return parsed.map((item, idx) => {
+      const vidId = item.videoId || 'bCz4OMemCcA';
+      return {
+        id: item.id || `lecture-${idx + 1}`,
+        title: item.title,
+        institution: item.institution || 'Academic Lecture',
+        speaker: item.speaker,
+        duration: item.duration || '45:00',
+        durationSec: item.durationSec || 2700,
+        badgeType: item.badgeType || (idx === 0 ? 'best-match' : 'technical'),
+        badgeLabel: item.badgeLabel || 'Recommended',
+        badgeCategory: item.badgeCategory || 'Lecture',
+        description: item.description,
+        videoId: vidId,
+        youtubeUrl: item.youtubeUrl || `https://www.youtube.com/watch?v=${vidId}`,
+        thumbnail: item.thumbnail || `https://img.youtube.com/vi/${vidId}/hqdefault.jpg`,
+      };
+    });
+  } catch (err) {
+    console.error('Failed to generate dynamic recommendations with Gemini:', err);
+    return [];
   }
 }

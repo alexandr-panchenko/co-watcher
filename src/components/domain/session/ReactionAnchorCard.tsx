@@ -48,21 +48,36 @@ export const ReactionAnchorCard: React.FC<ReactionAnchorCardProps> = ({
         {anchor.title}
       </h3>
 
-      {/* Webcam thumbnail preview */}
+      {/* Webcam video / thumbnail preview */}
       <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-black border border-white/10 group">
-        <img src={ASSETS.studioCam} alt="Reaction preview" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-          <div className="w-9 h-9 rounded-full bg-black/70 backdrop-blur-md text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-            <span className="material-symbols-outlined text-xl ml-0.5">play_arrow</span>
-          </div>
-        </div>
+        {anchor.mediaBlobUrl ? (
+          <video
+            src={anchor.mediaBlobUrl}
+            controls
+            playsInline
+            className="w-full h-full object-cover"
+          >
+            <track kind="captions" />
+          </video>
+        ) : (
+          <>
+            <img src={ASSETS.studioCam} alt="Reaction preview" className="w-full h-full object-cover" />
+            <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+              <div className="w-9 h-9 rounded-full bg-black/70 backdrop-blur-md text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <span className="material-symbols-outlined text-xl ml-0.5">play_arrow</span>
+              </div>
+            </div>
+          </>
+        )}
         <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-black/80 backdrop-blur-md text-nano font-mono text-white flex items-center gap-1">
           <span className="w-1.5 h-1.5 rounded-full bg-amber" />
           <span>{t('rail.camBadge')}</span>
         </div>
-        <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/90 backdrop-blur-md text-micro font-mono text-white">
-          {anchor.reactionDuration}
-        </div>
+        {anchor.reactionDuration && (
+          <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/90 backdrop-blur-md text-micro font-mono text-white">
+            {anchor.reactionDuration}
+          </div>
+        )}
       </div>
 
       {/* Transcript excerpt */}

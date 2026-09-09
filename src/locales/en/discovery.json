@@ -15,6 +15,7 @@
     "placeholder": "Ask to refine the list, switch topic, or provide your background...",
     "sendTitle": "Send refinement",
     "footerStatus": "Filtering across university repositories & verified channels",
-    "resultsCount": "4 results available"
+    "resultsCount": "4 results available",
+    "loadingCurating": "Curating lectures with Gemini AI..."
   }
 }

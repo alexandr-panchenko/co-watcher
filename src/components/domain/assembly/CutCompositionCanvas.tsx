@@ -5,13 +5,39 @@ import { ASSETS } from '../../../data/mockData';
 interface CutCompositionCanvasProps {
   layoutMode: 'pip' | 'split' | 'fullscreen-diagram';
   animatedCaptions: boolean;
+  reactionBlobUrl?: string | null | undefined;
 }
 
 export const CutCompositionCanvas: React.FC<CutCompositionCanvasProps> = ({
   layoutMode,
   animatedCaptions,
+  reactionBlobUrl,
 }) => {
   const { t } = useTranslation('assembly');
+
+  const renderWebcamReaction = (className: string) => {
+    if (reactionBlobUrl) {
+      return (
+        <video
+          src={reactionBlobUrl}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className={className}
+        >
+          <track kind="captions" />
+        </video>
+      );
+    }
+    return (
+      <img
+        src={ASSETS.studioCam}
+        alt="Reaction webcam feed"
+        className={className}
+      />
+    );
+  };
 
   return (
     <div className="relative w-full h-full overflow-hidden bg-black flex">
@@ -22,12 +48,8 @@ export const CutCompositionCanvas: React.FC<CutCompositionCanvasProps> = ({
             alt="Source lecture stage"
             className="w-full h-full object-cover"
           />
-          <div className="absolute bottom-16 right-5 w-44 aspect-video rounded-xl overflow-hidden border-2 border-amber shadow-2xl z-20 group/cam transition-transform hover:scale-105">
-            <img
-              src={ASSETS.studioCam}
-              alt="Reaction webcam feed"
-              className="w-full h-full object-cover"
-            />
+          <div className="absolute bottom-16 right-5 w-44 aspect-video rounded-xl overflow-hidden border-2 border-amber shadow-2xl z-20 group/cam transition-transform hover:scale-105 bg-black">
+            {renderWebcamReaction('w-full h-full object-cover')}
             <div className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/80 text-nano font-mono text-amber font-bold uppercase tracking-wider">
               {t('preview.camRec')}
             </div>
@@ -47,12 +69,8 @@ export const CutCompositionCanvas: React.FC<CutCompositionCanvasProps> = ({
               {t('preview.sourceLabel')}
             </div>
           </div>
-          <div className="relative h-full overflow-hidden border-l border-amber/40">
-            <img
-              src={ASSETS.studioCam}
-              alt="User Reaction"
-              className="w-full h-full object-cover"
-            />
+          <div className="relative h-full overflow-hidden border-l border-amber/40 bg-black">
+            {renderWebcamReaction('w-full h-full object-cover')}
             <div className="absolute top-3 left-3 px-2 py-0.5 rounded bg-amber text-black text-micro font-mono font-bold">
               {t('preview.reactionLabel')}
             </div>
@@ -67,12 +85,8 @@ export const CutCompositionCanvas: React.FC<CutCompositionCanvasProps> = ({
             alt="Multi-Head Attention full schematic"
             className="max-h-full object-contain rounded-lg border border-white/10"
           />
-          <div className="absolute bottom-16 right-6 w-36 aspect-video rounded-lg overflow-hidden border border-amber shadow-xl">
-            <img
-              src={ASSETS.studioCam}
-              alt="Reaction webcam"
-              className="w-full h-full object-cover"
-            />
+          <div className="absolute bottom-16 right-6 w-36 aspect-video rounded-lg overflow-hidden border border-amber shadow-xl bg-black">
+            {renderWebcamReaction('w-full h-full object-cover')}
           </div>
         </div>
       )}

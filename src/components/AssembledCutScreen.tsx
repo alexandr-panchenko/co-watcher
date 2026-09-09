@@ -11,11 +11,13 @@ import { SegmentedControl, SegmentedControlOption } from './ui';
 interface AssembledCutScreenProps {
   onNavigate: (screen: ScreenType) => void;
   onOpenExport: () => void;
+  reactionBlobUrl?: string | null | undefined;
 }
 
 export const AssembledCutScreen: React.FC<AssembledCutScreenProps> = ({
   onNavigate,
   onOpenExport,
+  reactionBlobUrl,
 }) => {
   const { t } = useTranslation('assembly');
   const [blocks, setBlocks] = useState<SequenceBlock[]>(ASSEMBLED_CUT_BLOCKS);
@@ -188,6 +190,7 @@ export const AssembledCutScreen: React.FC<AssembledCutScreenProps> = ({
               totalLengthSec={totalLengthSec}
               duckingActive={duckingActive}
               animatedCaptions={animatedCaptions}
+              reactionBlobUrl={reactionBlobUrl}
               onTogglePlay={() => setIsPlaying(!isPlaying)}
               onSeek={setCurrentTimeSec}
               onToggleDucking={() => setDuckingActive(!duckingActive)}

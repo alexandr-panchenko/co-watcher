@@ -13,6 +13,8 @@ export default function App() {
   const [currentScreen, setCurrentScreen] = useState<ScreenType>('home');
   const [selectedLecture, setSelectedLecture] = useState<VideoLecture | null>(null);
   const [hasReaction, setHasReaction] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [recordedReactionBlobUrl, setRecordedReactionBlobUrl] = useState<string | null>(null);
 
   // Modals state
   const [factCheckOpen, setFactCheckOpen] = useState(false);
@@ -46,11 +48,13 @@ export default function App() {
           <HomeScreen
             onNavigate={handleNavigate}
             onSelectLecture={handleSelectLecture}
+            onSearchQuery={setSearchQuery}
           />
         )}
 
         {currentScreen === 'discovery' && (
           <DiscoveryScreen
+            initialQuery={searchQuery}
             onSelectLecture={handleSelectLecture}
             onNavigate={handleNavigate}
           />
@@ -64,9 +68,11 @@ export default function App() {
               hasReaction={hasReaction}
               setHasReaction={setHasReaction}
               lecture={selectedLecture}
+              onReactionRecorded={setRecordedReactionBlobUrl}
             />
           ) : (
             <DiscoveryScreen
+              initialQuery={searchQuery}
               onSelectLecture={handleSelectLecture}
               onNavigate={handleNavigate}
             />
@@ -78,9 +84,11 @@ export default function App() {
             <AssembledCutScreen
               onNavigate={handleNavigate}
               onOpenExport={() => setExportOpen(true)}
+              reactionBlobUrl={recordedReactionBlobUrl}
             />
           ) : (
             <DiscoveryScreen
+              initialQuery={searchQuery}
               onSelectLecture={handleSelectLecture}
               onNavigate={handleNavigate}
             />

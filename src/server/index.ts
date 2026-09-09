@@ -4,7 +4,7 @@ import { serveStatic } from 'hono/bun';
 import { serve } from '@hono/node-server';
 import dotenv from 'dotenv';
 import { roomStore } from './roomStore';
-import { analyzeVideoMoments, generateChatResponse } from './gemini';
+import { analyzeVideoMoments, generateChatResponse, generateRecommendations } from './gemini';
 import { searchParallelEvidence } from './parallel';
 import { TimelineAnchor, SequenceBlock } from '../types';
 
@@ -22,6 +22,22 @@ app.get('/health', (c) => {
 
 app.get('/api/health', (c) => {
   return c.json({ status: 'ok', timestamp: Date.now() });
+});
+
+// Recommendations endpoint
+app.post('/api/recommendations', async (c) => {
+  try {
+    const body = (await c.req.json().catch(() => ({}))) as {
+      query?: string;
+      userPurpose?: string;
+    };
+    const query = body.query || 'Foundational artificial intelligence lectures';
+    const lectures = await generateRecommendations(query, body.userPurpose);
+    return c.json({ lectures });
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : 'Unknown error';
+    return c.json({ error: msg }, 500);
+  }
 });
 
 // 1. Room initialization

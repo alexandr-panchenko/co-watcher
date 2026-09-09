@@ -45,7 +45,7 @@ export interface VideoLecture {
   id: string;
   title: string;
   institution: string;
-  speaker?: string;
+  speaker?: string | undefined;
   duration: string;
   durationSec: number;
   badgeType: 'best-match' | 'technical' | 'clashes' | 'quick';

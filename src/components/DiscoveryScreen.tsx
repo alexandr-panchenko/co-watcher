@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DISCOVERY_LECTURES } from '../data/mockData';
 import { VideoLecture, ScreenType } from '../types';
@@ -8,17 +8,24 @@ import { Input, Button, Card, IconButton } from './ui';
 interface DiscoveryScreenProps {
   onSelectLecture: (lecture: VideoLecture) => void;
   onNavigate: (screen: ScreenType) => void;
+  initialQuery?: string | undefined;
 }
 
 export const DiscoveryScreen: React.FC<DiscoveryScreenProps> = ({
   onSelectLecture,
   onNavigate,
+  initialQuery,
 }) => {
   const { t } = useTranslation('discovery');
   const { t: tCommon } = useTranslation('common');
 
   const [refineInput, setRefineInput] = useState('');
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
+  const [lectures, setLectures] = useState<VideoLecture[]>(DISCOVERY_LECTURES);
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentTopic, setCurrentTopic] = useState<string>(
+    initialQuery || t('userBubble.text')
+  );
 
   const refinementPills = [
     '“Something shorter”',
@@ -27,19 +34,58 @@ export const DiscoveryScreen: React.FC<DiscoveryScreenProps> = ({
     '“Prefer university lectures only”',
   ];
 
+  const fetchRecommendations = React.useCallback(async (searchQuery: string) => {
+    setIsLoading(true);
+    setCurrentTopic(searchQuery);
+    try {
+      const res = await fetch('/api/recommendations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: searchQuery }),
+      });
+      if (res.ok) {
+        const data = (await res.json()) as { lectures?: VideoLecture[] };
+        if (data.lectures && data.lectures.length > 0) {
+          setLectures(data.lectures);
+          setActiveFilter(null);
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to load dynamic recommendations:', e);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (initialQuery && initialQuery.trim()) {
+      const timer = setTimeout(() => {
+        void fetchRecommendations(initialQuery.trim());
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [initialQuery, fetchRecommendations]);
+
   const filteredLectures = activeFilter
-    ? DISCOVERY_LECTURES.filter(
+    ? lectures.filter(
         (lec) =>
           lec.title.toLowerCase().includes(activeFilter.toLowerCase()) ||
           lec.description.toLowerCase().includes(activeFilter.toLowerCase()) ||
           lec.institution.toLowerCase().includes(activeFilter.toLowerCase())
       )
-    : DISCOVERY_LECTURES;
+    : lectures;
 
   const handleRefineSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!refineInput.trim()) return;
-    setActiveFilter(refineInput.trim());
+    const query = refineInput.trim();
+    if (!query) return;
+
+    if (query.length > 15 || query.includes(' ') || query.includes('find') || query.includes('lecture')) {
+      void fetchRecommendations(query);
+    } else {
+      setActiveFilter(query);
+    }
     setRefineInput('');
   };
 
@@ -67,7 +113,7 @@ export const DiscoveryScreen: React.FC<DiscoveryScreenProps> = ({
               <span>{t('userBubble.time')}</span>
             </div>
             <div className="bg-surface-hover text-text-primary p-3 rounded-xl rounded-tr-sm shadow-md font-sans text-body-compact leading-relaxed border border-border-default">
-              {t('userBubble.text')}
+              {currentTopic}
             </div>
           </div>
           <div className="w-8 h-8 rounded-full bg-surface-overlay flex items-center justify-center text-text-secondary font-mono text-micro font-semibold shrink-0 border border-border-default shadow-sm">
@@ -95,18 +141,29 @@ export const DiscoveryScreen: React.FC<DiscoveryScreenProps> = ({
               className="p-4 rounded-tl-sm flex flex-col gap-4 text-text-primary"
             >
               <p className="font-sans text-body-compact text-text-primary leading-relaxed">
-                {t('aiBubble.text')}
+                {isLoading
+                  ? t('input.loadingCurating')
+                  : t('aiBubble.text')}
               </p>
 
               {/* Lecture Cards List */}
               <div className="flex flex-col gap-3 w-full">
-                {filteredLectures.map((lecture) => (
-                  <LectureCard
-                    key={lecture.id}
-                    lecture={lecture}
-                    onSelect={onSelectLecture}
-                  />
-                ))}
+                {isLoading ? (
+                  <div className="flex flex-col items-center justify-center py-10 gap-3 text-text-muted">
+                    <span className="material-symbols-outlined text-3xl text-primary animate-spin">
+                      progress_activity
+                    </span>
+                    <span className="font-mono text-xs">{t('input.loadingCurating')}</span>
+                  </div>
+                ) : (
+                  filteredLectures.map((lecture) => (
+                    <LectureCard
+                      key={lecture.id}
+                      lecture={lecture}
+                      onSelect={onSelectLecture}
+                    />
+                  ))
+                )}
               </div>
 
               {/* AI Follow-up prompt & Suggestions */}
@@ -122,7 +179,7 @@ export const DiscoveryScreen: React.FC<DiscoveryScreenProps> = ({
                       size="sm"
                       onClick={() => {
                         const clean = pill.replace(/^[“"]|[”"]$/g, '');
-                        setActiveFilter(clean);
+                        void fetchRecommendations(`${currentTopic} (${clean})`);
                       }}
                       className="px-3 py-1 rounded-full text-caption-sm font-mono text-text-secondary hover:text-text-primary"
                     >
@@ -167,7 +224,7 @@ export const DiscoveryScreen: React.FC<DiscoveryScreenProps> = ({
           />
           <div className="flex items-center justify-between text-caption-sm font-mono text-text-muted px-1">
             <span>{t('input.footerStatus')}</span>
-            <span>{t('input.resultsCount')}</span>
+            <span>{isLoading ? 'Searching...' : `${filteredLectures.length} results available`}</span>
           </div>
         </form>
       </div>

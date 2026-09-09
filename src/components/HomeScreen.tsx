@@ -8,9 +8,10 @@ import { HomeChatBar } from './domain/home/HomeChatBar';
 interface HomeScreenProps {
   onNavigate: (screen: ScreenType) => void;
   onSelectLecture?: ((lecture: VideoLecture) => void) | undefined;
+  onSearchQuery?: ((query: string) => void) | undefined;
 }
 
-export const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate, onSelectLecture }) => {
+export const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate, onSelectLecture, onSearchQuery }) => {
   const [inputText, setInputText] = useState('');
 
   const promptSuggestions = [
@@ -36,41 +37,48 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate, onSelectLect
     },
   ];
 
+  const handleYouTubeSubmit = (url: string) => {
+    if (!onSelectLecture) return;
+    let extractedId = 'bCz4OMemCcA';
+    const match = url.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
+    if (match && match[1]) {
+      extractedId = match[1];
+    }
+    const customLecture: VideoLecture = {
+      id: extractedId,
+      title: 'YouTube Stream • Video Session',
+      institution: 'YouTube Video',
+      duration: 'Live / VOD',
+      durationSec: 1800,
+      badgeType: 'best-match',
+      badgeLabel: '★ Active Video',
+      badgeCategory: 'Custom Stream',
+      description: `Active video stream loaded from URL: ${url}`,
+      thumbnail: '',
+    };
+    onSelectLecture(customLecture);
+  };
+
   const handleSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const trimmed = inputText.trim();
     if (!trimmed) return;
 
     const lower = trimmed.toLowerCase();
-    const isYouTube =
-      lower.includes('youtube.com/watch') ||
-      lower.includes('youtu.be/') ||
-      lower.includes('youtube.com/embed/');
+    const isYouTube = lower.includes('youtube.com/') || lower.includes('youtu.be/');
 
     if (isYouTube && onSelectLecture) {
-      let extractedId = 'bCz4OMemCcA';
-      const match = trimmed.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
-      if (match && match[1]) {
-        extractedId = match[1];
-      }
-      const customLecture: VideoLecture = {
-        id: extractedId,
-        title: 'YouTube Stream • Video Session',
-        institution: 'YouTube Video',
-        duration: 'Live / VOD',
-        durationSec: 1800,
-        badgeType: 'best-match',
-        badgeLabel: '★ Active Video',
-        badgeCategory: 'Custom Stream',
-        description: `Active video stream loaded from URL: ${trimmed}`,
-        thumbnail: '',
-      };
-      onSelectLecture(customLecture);
-    } else if (lower.includes('reaction') || lower.includes('short video') || lower.includes('cut')) {
-      onNavigate('assembly');
-    } else {
-      onNavigate('discovery');
+      handleYouTubeSubmit(trimmed);
+      return;
     }
+
+    if (lower.includes('reaction') || lower.includes('short video') || lower.includes('cut')) {
+      onNavigate('assembly');
+      return;
+    }
+
+    onSearchQuery?.(trimmed);
+    onNavigate('discovery');
   };
 
   return (
@@ -81,7 +89,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onNavigate, onSelectLect
         <PromptSuggestions
           suggestions={promptSuggestions}
           onSelect={(item) => {
-            setInputText(item.text.replace(/^[“"]|[”"]$/g, ''));
+            const clean = item.text.replace(/^[“"]|[”"]$/g, '');
+            setInputText(clean);
+            onSearchQuery?.(clean);
             onNavigate(item.target);
           }}
         />

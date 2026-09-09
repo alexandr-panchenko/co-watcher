@@ -10,6 +10,7 @@ interface CutStagePreviewProps {
   totalLengthSec: number;
   duckingActive: boolean;
   animatedCaptions: boolean;
+  reactionBlobUrl?: string | null | undefined;
   onTogglePlay: () => void;
   onSeek: (timeSec: number) => void;
   onToggleDucking: () => void;
@@ -23,6 +24,7 @@ export const CutStagePreview: React.FC<CutStagePreviewProps> = ({
   totalLengthSec,
   duckingActive,
   animatedCaptions,
+  reactionBlobUrl,
   onTogglePlay,
   onSeek,
   onToggleDucking,
@@ -43,6 +45,7 @@ export const CutStagePreview: React.FC<CutStagePreviewProps> = ({
       <CutCompositionCanvas
         layoutMode={layoutMode}
         animatedCaptions={animatedCaptions}
+        reactionBlobUrl={reactionBlobUrl}
       />
 
       {/* Transport & Timeline Scrubber */}

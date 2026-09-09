@@ -15,6 +15,7 @@ interface SessionScreenProps {
   hasReaction: boolean;
   setHasReaction: (val: boolean) => void;
   lecture: VideoLecture | null;
+  onReactionRecorded?: ((blobUrl: string) => void) | undefined;
 }
 
 async function fetchLectureMoments(
@@ -71,6 +72,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({
   hasReaction,
   setHasReaction,
   lecture,
+  onReactionRecorded,
 }) => {
   const [viewMode, setViewMode] = useState<ViewMode>('standard');
   const [anchors, setAnchors] = useState<TimelineAnchor[]>([]);
@@ -120,6 +122,7 @@ export const SessionScreen: React.FC<SessionScreenProps> = ({
     setHasReaction,
     setSelectedAnchorId,
     setChatMessages,
+    onReactionRecorded,
   });
 
   const dock = useSessionCompanionDock({

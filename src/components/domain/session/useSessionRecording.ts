@@ -11,6 +11,7 @@ interface UseSessionRecordingParams {
   setHasReaction: (val: boolean) => void;
   setSelectedAnchorId: (id: string | null) => void;
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
+  onReactionRecorded?: ((blobUrl: string) => void) | undefined;
 }
 
 export function useSessionRecording({
@@ -22,6 +23,7 @@ export function useSessionRecording({
   setHasReaction,
   setSelectedAnchorId,
   setChatMessages,
+  onReactionRecorded,
 }: UseSessionRecordingParams) {
   const handleKeepReaction = React.useCallback(
     (blob: Blob, durationSec: number) => {
@@ -46,6 +48,9 @@ export function useSessionRecording({
       setAnchors((prev) => [...prev, reactionAnchor].sort((a, b) => a.timeSec - b.timeSec));
       setHasReaction(true);
       setSelectedAnchorId(reactionAnchor.id);
+      if (onReactionRecorded) {
+        onReactionRecorded(blobUrl);
+      }
 
       setChatMessages((prev) => [
         ...prev,
@@ -69,7 +74,7 @@ export function useSessionRecording({
         body: JSON.stringify(reactionAnchor),
       }).catch(() => {});
     },
-    [currentTimeSec, formatTime, setAnchors, setChatMessages, setHasReaction, setSelectedAnchorId]
+    [currentTimeSec, formatTime, setAnchors, setChatMessages, setHasReaction, setSelectedAnchorId, onReactionRecorded]
   );
 
   const recorder = useMediaReactionRecording({
